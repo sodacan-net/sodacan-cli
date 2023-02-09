@@ -1,0 +1,23 @@
+location:
+    latitude: 42.5583482
+    longitude: -123.3968023
+    address: 123 Elm Street
+    timezone: America/Los_Angeles
+# If missing, no web server is started
+webServer:
+    listen: http://0.0.0.0:4011/api
+
+kafka:
+    url: soda6:9092
+    consumer:
+        sessionTimeoutSec: 30
+    producer:
+        lingerMs: 0
+
+modes:
+    - name: default
+      clock: real
+      messageBus: kafka
+      stateStore: memory
+      logger: console
+      
