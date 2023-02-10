@@ -1,24 +1,27 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.sodacan</groupId>
 	<artifactId>cli</artifactId>
 	<name>cli</name>
-	<properties></properties>
+	<version>0.0.1</version>
+	<properties>
+		<sodacan.version>0.0.1</sodacan.version>
+		<antlr4.version>4.11.1</antlr4.version>
+		<jackson.version>2.14.1</jackson.version>
+		<java.version>11</java.version>
+		<jersey.version>3.0.3</jersey.version>
+		<junit.version>4.13.1</junit.version>
+		<kafka.version>3.3.1</kafka.version>
+		<slf4j.version>2.0.6</slf4j.version>
+		<auto-service.version>1.0.1</auto-service.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 	<description>Sodacan Command Line tool</description>
-	<parent>
-		<groupId>net.sodacan</groupId>
-		<version>0.0.1</version>
-		<artifactId>sodacan</artifactId>
-	</parent>
 	<dependencies>
 		<dependency>
 			<groupId>net.sodacan</groupId>
 			<artifactId>api</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sodacan</groupId>
-			<artifactId>plugin-kafka</artifactId>
-			<version>${project.parent.version}</version>
+			<version>0.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>
@@ -28,6 +31,32 @@
 	</dependencies>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.10.1</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>com.google.auto.service</groupId>
+							<artifactId>auto-service</artifactId>
+							<version>${auto-service.version}</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.7</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.9</version>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>appassembler-maven-plugin</artifactId>
