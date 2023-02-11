@@ -22,7 +22,6 @@ import net.sodacan.api.module.ModuleLoader;
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
-import net.sodacan.messagebus.MB;
 import net.sodacan.mode.Mode;
 /**
  * <p>Load a module into Sodacan.</p>

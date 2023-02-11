@@ -20,7 +20,6 @@ import net.sodacan.SodacanException;
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
-import net.sodacan.config.Config;
 import net.sodacan.messagebus.MB;
 import net.sodacan.mode.Mode;
 
