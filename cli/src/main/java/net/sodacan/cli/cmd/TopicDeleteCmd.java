@@ -23,7 +23,6 @@ import net.sodacan.SodacanException;
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
-import net.sodacan.config.Config;
 import net.sodacan.messagebus.MB;
 import net.sodacan.mode.Mode;
 
@@ -37,7 +36,7 @@ public class TopicDeleteCmd extends CmdBase implements Action {
 		try {
 			init(commandLine, index);
 			Mode mode = needMode();
-			MB mb = mode.getMessageBusService().getMB(Config.getInstance());
+			MB mb = mode.getMB();
 			String topicName = needArg(0, "Topic Name");
 			String response = null;
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));

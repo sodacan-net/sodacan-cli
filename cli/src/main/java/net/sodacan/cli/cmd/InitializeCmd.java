@@ -16,11 +16,11 @@ package net.sodacan.cli.cmd;
 
 import org.apache.commons.cli.CommandLine;
 
-import net.sodacan.SodacanException;
 import net.sodacan.api.topic.Initialize;
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
+import net.sodacan.mode.Mode;
 
 public class InitializeCmd extends CmdBase implements Action{
 
@@ -29,17 +29,16 @@ public class InitializeCmd extends CmdBase implements Action{
 	}
 	
 	@Override
-	public void execute(CommandLine cmd, int index) {
+	public void execute(CommandLine commandLine, int index) {
+		init(commandLine, index);
+		Mode mode = needMode();
 		boolean verbose = false;
-		if (cmd.hasOption('v')) {
+		if (commandLine.hasOption('v')) {
 			verbose = true;
-		}
-		if (cmd.getArgList().size()>index) {
-			throw new SodacanException("Extraneous argument: " + cmd.getArgs()[index]);
 		}
 		Initialize initialize = new Initialize();
 		System.out.println("Initializing master topics...");
-		initialize.setupTopics(verbose);
+		initialize.setupTopics(mode, verbose);
 		System.out.println("...Initialized master topics");
 	}
 

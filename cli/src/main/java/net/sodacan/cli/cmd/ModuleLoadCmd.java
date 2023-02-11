@@ -22,6 +22,7 @@ import net.sodacan.api.module.ModuleLoader;
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
+import net.sodacan.messagebus.MB;
 import net.sodacan.mode.Mode;
 /**
  * <p>Load a module into Sodacan.</p>
@@ -42,15 +43,13 @@ public class ModuleLoadCmd extends CmdBase implements Action {
 
 	@Override
 	public void execute(CommandLine commandLine, int index) {
-		init( commandLine, index);
+		init(commandLine, index);
 		Mode mode = needMode();
 		Path path = needPath(0);
 		try {
-			Mode.setModeInThread(mode.getName());
 			String rawSource = needFileContents(path);
-			new ModuleLoader().loadModule( rawSource );
+			new ModuleLoader(mode).loadModule( rawSource );
 		} finally {
-			Mode.clearModeInThread();
 		}
 	}
 

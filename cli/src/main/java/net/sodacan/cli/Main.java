@@ -15,7 +15,6 @@
 package net.sodacan.cli;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
@@ -110,6 +109,9 @@ public class Main implements CommandContext {
 				String args[] = response.split(" ");
 				if (args.length==0 || args[0].isEmpty()) continue;
 				if ("quit".equals(args[0])) {
+					break;
+				}
+				if ("exit".equals(args[0])) {
 					break;
 				}
 				if ("help".equals(args[0])) {

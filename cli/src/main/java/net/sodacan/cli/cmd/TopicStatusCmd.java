@@ -34,7 +34,7 @@ public class TopicStatusCmd extends CmdBase implements Action {
 	public void execute(CommandLine commandLine, int index) {
 		init(commandLine, index);
 		Mode mode = needMode();
-		MB mb = mode.getMessageBusService().getMB(Config.getInstance());
+		MB mb = mode.getMB();
 		String topicName = null;
 		try {
 			topicName = this.needArg(0, "topic name");

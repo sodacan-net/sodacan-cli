@@ -23,18 +23,18 @@ import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
 import net.sodacan.messagebus.MB;
 import net.sodacan.mode.Mode;
-import net.sodacan.config.Config;
 
 public class TopicListCmd extends CmdBase implements Action {
 
 	public TopicListCmd( CommandContext cc) {
 		super( cc );
 	}
+	
 	@Override
 	public void execute(CommandLine commandLine, int index) {
 		init(commandLine, index);
 		Mode mode = needMode();
-		MB mb = mode.getMessageBusService().getMB(Config.getInstance());
+		MB mb = mode.getMB();
 		List<String> topics = mb.listTopics();
 //		topics.sort(String::compareTo);
 		System.out.println(topics);

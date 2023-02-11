@@ -14,8 +14,6 @@
  */
 package net.sodacan.cli.cmd;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
@@ -24,13 +22,12 @@ import net.sodacan.api.topic.Initialize;
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
-import net.sodacan.config.Config;
 import net.sodacan.messagebus.MB;
 import net.sodacan.messagebus.MBRecord;
 import net.sodacan.messagebus.MBTopic;
 import net.sodacan.mode.Mode;
 
-public class ModuleListCmd extends CmdBase implements Action, PropertyChangeListener {
+public class ModuleListCmd extends CmdBase implements Action {
 
 	public ModuleListCmd( CommandContext cc) {
 		super( cc );
@@ -38,17 +35,12 @@ public class ModuleListCmd extends CmdBase implements Action, PropertyChangeList
 
 	@Override
 	public void execute(CommandLine commandLine, int index) {
-		init( commandLine, index);
+		init(commandLine, index);
 		Mode mode = needMode();
-		MB mb = mode.getMessageBusService().getMB(Config.getInstance());
+		MB mb = mode.getMB();
 		MBTopic mbt = mb.openTopic(Initialize.MODULES, 0);
 		Map<String, MBRecord> map = mbt.snapshot();
 		map.forEach((k,v) -> System.out.println(v));
-	}
-
-	@Override
-	public void propertyChange(PropertyChangeEvent event) {
-		System.out.println(event.getPropertyName() + " = " + event.getNewValue());
 	}
 
 }

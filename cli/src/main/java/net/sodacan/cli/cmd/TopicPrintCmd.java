@@ -14,8 +14,6 @@
  */
 package net.sodacan.cli.cmd;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
@@ -23,13 +21,12 @@ import org.apache.commons.cli.CommandLine;
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
-import net.sodacan.config.Config;
 import net.sodacan.messagebus.MB;
 import net.sodacan.messagebus.MBRecord;
 import net.sodacan.messagebus.MBTopic;
 import net.sodacan.mode.Mode;
 
-public class TopicPrintCmd extends CmdBase implements Action, PropertyChangeListener {
+public class TopicPrintCmd extends CmdBase implements Action {
 
 	public TopicPrintCmd( CommandContext cc) {
 		super( cc );
@@ -40,15 +37,10 @@ public class TopicPrintCmd extends CmdBase implements Action, PropertyChangeList
 		init( commandLine, index);
 		String topicName = needArg(0, "topic name");
 		Mode mode = needMode();
-		MB mb = mode.getMessageBusService().getMB(Config.getInstance());
+		MB mb = mode.getMB();
+		System.out.println("Topic " + topicName);
 		MBTopic mbt = mb.openTopic(topicName, 0);
 		Map<String, MBRecord> map = mbt.snapshot();
-		map.forEach((k,v) -> System.out.println(v));
+		map.forEach((k,v) -> System.out.println(k + "=" + v));
 	}
-
-	@Override
-	public void propertyChange(PropertyChangeEvent event) {
-		System.out.println(event.getPropertyName() + " = " + event.getNewValue());
-	}
-
 }

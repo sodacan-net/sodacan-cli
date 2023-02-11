@@ -74,48 +74,27 @@ public abstract class CmdBase {
 			return config;
 		}
 	}
+	
 	/**
-	 * See if we can get a mode out of the config file
-	 * @param modeName
-	 * @return Mode found or null if not
-	 */
-	protected Mode findConfigMode(String modeName) {
-		Mode mode = null;
-		// Before looking at a database of some kind (Kafka for example) see if the
-		// Mode we're looking for is in the config file.
-		List<ConfigMode> configModes =  Config.getInstance().getModes();
-		for (ConfigMode configMode : configModes) {
-			if (configMode.getName().equals(modeName)) {
-				mode = Mode.newModeBuilder()
-						.name(modeName)
-						.logger(configMode.getLogger())
-						.messageBus(configMode.getMessageBus())
-						.stateStore(configMode.getStateStore())
-						.clock(configMode.getClock())
-						.build();
-				break;
-			}
-		}
-		return mode;
-	}
-	/**
-	 * <p>Many commands need a mode to be specified or defaulted, so, set it up here.
-	 * We have a conundrum here.</p>
+	 * <p>Many commands need a mode to be specified or defaulted, so, we set it up here.</p>
+	 * <p> There are three "kinds" of mode related to this.
 	 * <ul>
-	 * <li>To find available modes, we need to look them up.</li>
-	 * <li>To get the list of modes requires a connection to a MessageBus, memory or kafka, or anything else.</li>
-	 * <li>To make a messageBus provider available, we need a mode to be specified.</li>
+	 * <li>BaseMode as specified in the configuration.</li>
+	 * <li>Mode as specified on the command line</li>
+	 * <li>A new mode created (cloned) by the mode commands.</li>
 	 * </ul>
-	 * <p>So, here's how it works. A mode option (-m) does not and should not be specified in order to create a mode.
-	 * Doing so would require the specified mode to be selected.
-	 * 
-	 * So we accept the user's "create mode" blindly. If the name of the mode is default, Then we supply the settings.
-	 * We look to the config file for the definition of a default mode, and use that. Maybe some others as well.
-	 * Once the bootstrapping is done, we're off to the races.</p>
+	 * <p>We're not concerned with the last kind just yet. But they shouldn't e confused 
+	 * with the mode we are operating now, the concern of this method. The mode specified in the command line (or defaulted). 
+	 * is limited to selecting one of the BaseModes defined in the configuration.</p>
+	 * <p>We don't set the mode in thread storage. That can be done by the caller who is aware of
+	 * the lifecycle of the thread local setting</p>
+
 	 * @return The selected mode, or null
 	 */
 	protected Mode needMode() {
-		needConfig();
+		// Setup base and initial modes (it will be ignored if already done, once)
+		Mode.configure(needConfig());
+		// Now see which one we want
 		String modeName;
 		// The -m option specifies mode, but we allow a default mode, too
 		if (commandLine.hasOption("m")) {
@@ -123,22 +102,11 @@ public abstract class CmdBase {
 		} else {
 			modeName = Initialize.DEFAULT_MODE;
 		}
-		// Try the configuration file first.
-		Mode mode = findConfigMode( modeName);
-//		// If not found, then maybe we have a useful way to find it
-//		if (mode==null) {
-//			// Get the latest rendition of the mode
-//			ModeConsumer rc = new ModeConsumer(modeName);
-//			rc.snapshot();
-//			String json = rc.get(modeName);
-//			if (json==null) {
-//				throw new SodacanException(commandName  + " Mode " + modeName + " not found");
-//			}
-//			// Turn the json into a node object
-//			mode = Mode.createModeFromJson(json);
-//		}
-		// And initialize it (load plugins)
-		mode.initialize();
+		// OK, now we know which mode we need. Let's see if it exists.
+		Mode mode = Mode.findMode(modeName);
+		if (mode==null) {
+			throw new SodacanException("Specified mode: " + modeName + " not found");
+		}
 		return mode;
 	}
 
