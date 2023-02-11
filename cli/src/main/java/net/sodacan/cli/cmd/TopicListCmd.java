@@ -36,7 +36,9 @@ public class TopicListCmd extends CmdBase implements Action {
 		Mode mode = needMode();
 		MB mb = mode.getMB();
 		List<String> topics = mb.listTopics();
-//		topics.sort(String::compareTo);
+		if (commandLine.hasOption("sort")) {
+			topics.sort(String::compareTo);
+		}
 		System.out.println(topics);
 	}
 
