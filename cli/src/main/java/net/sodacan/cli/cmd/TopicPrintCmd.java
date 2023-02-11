@@ -40,7 +40,11 @@ public class TopicPrintCmd extends CmdBase implements Action {
 		MB mb = mode.getMB();
 		System.out.println("Topic " + topicName);
 		MBTopic mbt = mb.openTopic(topicName, 0);
-		Map<String, MBRecord> map = mbt.snapshot();
-		map.forEach((k,v) -> System.out.println(k + "=" + v));
+		if (commandLine.hasOption('f')) {
+			mbt.follow().forEach((mbr) -> System.out.println("Topic Print with follow: " + mbr));
+		} else {
+			Map<String, MBRecord> map = mbt.snapshot();
+			map.forEach((k,v) -> System.out.println(k + "=" + v));
+		}
 	}
 }
