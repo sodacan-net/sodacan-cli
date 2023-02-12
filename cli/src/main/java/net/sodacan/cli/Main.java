@@ -15,6 +15,8 @@
 package net.sodacan.cli;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
@@ -88,8 +90,8 @@ public class Main implements CommandContext {
 		options.addOption(null, "all", false, "When listing any topic, don't reduce the results");
 		options.addOption("c", "config", true, "Config file, default config/config.yaml");
 		options.addOption("d", "debug", false, "show debug output");
-		options.addOption(null, "follow", false, "For any topic, follow the results, asynchronously");
-		options.addOption("f", "force", false, "Don't ask for confirmation before critical action");
+		options.addOption("f", "follow", false, "For any topic, follow the results, asynchronously");
+		options.addOption("I", "indirect", true, "Run the contents of the named file. Use -i to be interact after that.");
 		options.addOption("h", "help", false, "This help");
 		options.addOption("i", "interactive", false, "Interactive mode");
 		options.addOption(null, "limit", true, "Limit output to <lines>, detault 1000");
@@ -138,11 +140,47 @@ public class Main implements CommandContext {
 		logger.debug("Working Directory = " + System.getProperty("user.dir"));
     	Config.init(fileName);
 	}
+	
+	public void openAndExecute( String fileName ) {
+		BufferedReader bufferedReader = null;
+		try {
+			bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
+			while (true) {
+				String response = bufferedReader.readLine();
+				if (response==null) break;
+				response = response.strip();
+				int commentIndex = response.indexOf('#');
+				if (commentIndex>=0) {
+					response = response.substring(0, commentIndex).strip();
+				}
+				if (!response.isEmpty()) {
+					String args[] = response.split(" ");
+					parse(args);
+				}
+			}
+		} catch (IOException e) {
+			throw new SodacanException("Error opening inddirect file: " + fileName);
+		} finally {
+			if (bufferedReader!=null) {
+				try {
+					bufferedReader.close();
+				} catch (IOException e) {
+				}
+			}
+		}
 
+	}
 	public void parse(String[] args) {
 		try {
 			logger.trace("Parse Options");
 			CommandLine cmd = parser.parse(options, args);
+			// We go recursive here: open a file and process it.
+			// But be careful of cycles.
+			if (cmd.hasOption('I')) {
+				String fileName = cmd.getOptionValue('I');
+				logger.debug("Command file: " + fileName);
+				openAndExecute( fileName );
+			}
 			// These options take action immediately
 			if (cmd.hasOption('h')) {
 				HelpFormatter formatter = new HelpFormatter();
@@ -151,12 +189,12 @@ public class Main implements CommandContext {
 			      command.printHelp("");
 			      return;
 			}
-//			// Config file setup
-//			if (cmd.hasOption('c')) {
-//				setupConfig(cmd.getOptionValue("c"));
-//			} else {
-//				setupConfig( "config/config.yaml");
-//			}
+			// Config file setup
+			if (cmd.hasOption('c')) {
+				setupConfig(cmd.getOptionValue("c"));
+			} else {
+				setupConfig( "config/config.yaml");
+			}
 			if (cmd.hasOption('i')) {
 				interactiveMode();
 				return;

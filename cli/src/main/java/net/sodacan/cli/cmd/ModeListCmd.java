@@ -14,11 +14,17 @@
  */
 package net.sodacan.cli.cmd;
 
+import java.util.Map;
+
 import org.apache.commons.cli.CommandLine;
 
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
+import net.sodacan.messagebus.MB;
+import net.sodacan.messagebus.MBRecord;
+import net.sodacan.messagebus.MBTopic;
+import net.sodacan.mode.Mode;
 
 public class ModeListCmd extends CmdBase implements Action {
 
@@ -28,11 +34,14 @@ public class ModeListCmd extends CmdBase implements Action {
 
 	@Override
 	public void execute(CommandLine commandLine, int index) {
-//		ReductionConsumer<String, String> mc = new ReductionConsumer<String,String>(Initialize.MODES);
-//		mc.snapshot();
-//		List<String> names = mc.getListOfKeys();
-////		names.sort(String::compareTo);
-//		names.forEach((n) -> System.out.println(n));
+		init( commandLine, index);
+		Mode mode = needMode();
+		MB mb = mode.getMB();
+		System.out.println("Modes: ");
+		MBTopic mbt = mb.openTopic("Modes", 0);
+		Map<String, MBRecord> map = mbt.snapshot();
+		map.forEach((k,v) -> System.out.println(k + "=" + v));
+
 	}
 
 }

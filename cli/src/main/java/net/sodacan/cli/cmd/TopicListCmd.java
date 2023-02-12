@@ -14,6 +14,7 @@
  */
 package net.sodacan.cli.cmd;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -35,7 +36,8 @@ public class TopicListCmd extends CmdBase implements Action {
 		init(commandLine, index);
 		Mode mode = needMode();
 		MB mb = mode.getMB();
-		List<String> topics = mb.listTopics();
+		List<String> topics = new LinkedList<String>();
+		topics.addAll(mb.listTopics());
 		if (commandLine.hasOption("sort")) {
 			topics.sort(String::compareTo);
 		}

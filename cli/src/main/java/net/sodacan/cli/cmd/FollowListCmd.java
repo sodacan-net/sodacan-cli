@@ -16,7 +16,6 @@ package net.sodacan.cli.cmd;
 
 import org.apache.commons.cli.CommandLine;
 
-import net.sodacan.api.Followable;
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;

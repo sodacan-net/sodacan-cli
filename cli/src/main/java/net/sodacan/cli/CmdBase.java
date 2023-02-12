@@ -21,18 +21,13 @@ import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
-import java.util.stream.Stream;
 
 import org.apache.commons.cli.CommandLine;
 
 import net.sodacan.SodacanException;
 import net.sodacan.api.topic.Initialize;
 import net.sodacan.config.Config;
-import net.sodacan.config.ConfigMode;
-import net.sodacan.messagebus.MBRecord;
 import net.sodacan.messagebus.MBTopic;
 import net.sodacan.mode.Mode;
 
@@ -89,9 +84,6 @@ public abstract class CmdBase {
 	 * @param followName
 	 * @param stream
 	 */
-//	public void addFollow(String followName, Stream<MBRecord> stream ) {
-//		follows.put(followName, stream);
-//	}
 	public void addFollow(String followName, MBTopic mbt ) {
 		follows.put(followName, mbt);
 	}
@@ -112,13 +104,6 @@ public abstract class CmdBase {
 	 * Close and remove a follows from the list
 	 * @param followName
 	 */
-//	public void deleteFollow(String followName) {
-//		Stream<MBRecord> follow = follows.get(followName);
-//		if (follow!=null) {
-//			follow.close();
-//		}
-//		follows.remove(followName);
-//	}
 	public void deleteFollow(String followName) {
 		MBTopic mbt = follows.get(followName);
 		mbt.stop();
