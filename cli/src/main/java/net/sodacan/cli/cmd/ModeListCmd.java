@@ -37,11 +37,11 @@ public class ModeListCmd extends CmdBase implements Action {
 		init( commandLine, index);
 		Mode mode = needMode();
 		MB mb = mode.getMB();
-		System.out.println("Modes: ");
+		System.out.print("Modes: [");
 		MBTopic mbt = mb.openTopic("Modes", 0);
 		Map<String, MBRecord> map = mbt.snapshot();
-		map.forEach((k,v) -> System.out.println(k + "=" + v));
-
+		map.forEach((k,v) -> System.out.print(k + "=" + v + ","));
+		System.out.println("]");
 	}
 
 }

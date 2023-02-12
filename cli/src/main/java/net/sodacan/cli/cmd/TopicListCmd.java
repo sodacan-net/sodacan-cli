@@ -41,6 +41,7 @@ public class TopicListCmd extends CmdBase implements Action {
 		if (commandLine.hasOption("sort")) {
 			topics.sort(String::compareTo);
 		}
+		System.out.print("Topics: ");
 		System.out.println(topics);
 	}
 

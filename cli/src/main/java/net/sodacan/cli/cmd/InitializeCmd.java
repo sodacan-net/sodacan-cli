@@ -15,6 +15,8 @@
 package net.sodacan.cli.cmd;
 
 import org.apache.commons.cli.CommandLine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.sodacan.api.topic.Initialize;
 import net.sodacan.cli.Action;
@@ -23,6 +25,7 @@ import net.sodacan.cli.CommandContext;
 import net.sodacan.mode.Mode;
 
 public class InitializeCmd extends CmdBase implements Action{
+	private final static Logger logger = LoggerFactory.getLogger(InitializeCmd.class);
 
 	public InitializeCmd( CommandContext cc) {
 		super( cc );
@@ -32,14 +35,10 @@ public class InitializeCmd extends CmdBase implements Action{
 	public void execute(CommandLine commandLine, int index) {
 		init(commandLine, index);
 		Mode mode = needMode();
-		boolean verbose = false;
-		if (commandLine.hasOption('v')) {
-			verbose = true;
-		}
 		Initialize initialize = new Initialize();
-		System.out.println("Initializing master topics...");
-		initialize.setupTopics(mode, verbose);
-		System.out.println("...Initialized master topics");
+		logger.debug("Initializing master topics...");
+		initialize.setupTopics(mode);
+		logger.debug("...Initialized master topics");
 	}
 
 

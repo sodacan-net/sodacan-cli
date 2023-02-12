@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import net.sodacan.SodacanException;
 import net.sodacan.api.Followable;
+import net.sodacan.api.topic.Initialize;
 import net.sodacan.cli.cmd.AgentListCmd;
 import net.sodacan.cli.cmd.AgentStatusCmd;
 import net.sodacan.cli.cmd.BrokerListCmd;
@@ -49,6 +50,7 @@ import net.sodacan.cli.cmd.TopicPrintCmd;
 import net.sodacan.cli.cmd.TopicStatusCmd;
 import net.sodacan.cli.cmd.TopicWatchCmd;
 import net.sodacan.config.Config;
+import net.sodacan.mode.Mode;
 
 public class Main implements CommandContext {
 	private final static Logger logger = LoggerFactory.getLogger(Main.class);
@@ -98,7 +100,7 @@ public class Main implements CommandContext {
 		options.addOption("m", true, "Specify sticky mode, default mode is default");
 		options.addOption(null, "sort", false, "Sort the output of a list or print");
 		options.addOption(null, "start", true, "Start output at <line>, detault 1");
-		options.addOption("v", "verbose", false, "Be verbose");
+		options.addOption("q", "quiet", false, "Don't be verbose");
 		parser = new DefaultParser(true);
 	}
 
@@ -119,9 +121,9 @@ public class Main implements CommandContext {
 				if ("help".equals(args[0])) {
 					showHelp();
 				} else {
-					parse(args);
+					parse(args, false);
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				System.out.println(e.getMessage());
 				Throwable t = e.getCause();
 				while (t!=null) {
@@ -155,7 +157,7 @@ public class Main implements CommandContext {
 				}
 				if (!response.isEmpty()) {
 					String args[] = response.split(" ");
-					parse(args);
+					parse(args,false);
 				}
 			}
 		} catch (IOException e) {
@@ -170,44 +172,67 @@ public class Main implements CommandContext {
 		}
 
 	}
-	public void parse(String[] args) {
+
+	/**
+	 * Before we get started, set the mode we're going to use for this session. This must follow
+	 * the configFile setup.
+	 * @param modeName
+	 */
+	public void setupMode( String modeName) {
+		Mode.configure(Config.getInstance());
+		Mode.setModeInThread(modeName);
+	}
+
+	public void parse(String[] args, boolean topLevel) {
 		try {
-			logger.trace("Parse Options");
 			CommandLine cmd = parser.parse(options, args);
-			// We go recursive here: open a file and process it.
-			// But be careful of cycles.
-			if (cmd.hasOption('I')) {
-				String fileName = cmd.getOptionValue('I');
-				logger.debug("Command file: " + fileName);
-				openAndExecute( fileName );
-			}
-			// These options take action immediately
-			if (cmd.hasOption('h')) {
-				HelpFormatter formatter = new HelpFormatter();
-			      formatter.printHelp("soda [options] [command]", options);
-			      System.out.println("\nCommands:");
-			      command.printHelp("");
-			      return;
-			}
-			// Config file setup
-			if (cmd.hasOption('c')) {
-				setupConfig(cmd.getOptionValue("c"));
-			} else {
-				setupConfig( "config/config.yaml");
-			}
-			if (cmd.hasOption('i')) {
-				interactiveMode();
-				return;
+			if (topLevel) {
+				logger.debug("Parse Options");
+				// These options take action immediately
+				if (cmd.hasOption('h')) {
+					HelpFormatter formatter = new HelpFormatter();
+				      formatter.printHelp("soda [options] [command]", options);
+				      System.out.println("\nCommands:");
+				      command.printHelp("");
+				      return;
+				}
+				// Config file setup
+				if (cmd.hasOption('c')) {
+					setupConfig(cmd.getOptionValue("c"));
+				} else {
+					setupConfig( "config/config.yaml");
+				}
+				if (cmd.hasOption('m')) {
+					setupMode(cmd.getOptionValue("m"));
+				} else {
+					setupMode(Initialize.DEFAULT_MODE);
+				}
+				// We go recursive here: open a file and process it.
+				// But be careful of cycles.
+				if (cmd.hasOption('I')) {
+					String fileName = cmd.getOptionValue('I');
+					logger.debug("Command file: " + fileName);
+					openAndExecute( fileName );
+				}
+				if (cmd.hasOption('i')) {
+					interactiveMode();
+					return;
+				}
 			}
 			// The rest depend on command(s)
 			logger.trace("Dispatch");
 			command.dispatch(cmd,0);
 		} catch (Exception e) {
-			System.out.println(e.toString());
-			Throwable t = e.getCause();
-			while (t!=null) {
-				System.out.println("  caused by: " + t.getLocalizedMessage());
-				t = t.getCause();
+			if (e instanceof SodacanException && e.getCause()==null) {
+				System.err.println(e.getMessage());
+			} else {
+				System.err.println(e.toString());
+				Throwable t = e.getCause();
+				while (t!=null) {
+					System.out.println("  caused by: " + t.getLocalizedMessage());
+					t = t.getCause();
+				}
+				
 			}
 		}
 	}
@@ -225,7 +250,7 @@ public class Main implements CommandContext {
 		if (args==null || args.length==0) {
 			main.showHelp();
 		} else {
-			main.parse(args);
+			main.parse(args, true);
 		}
 	}
 

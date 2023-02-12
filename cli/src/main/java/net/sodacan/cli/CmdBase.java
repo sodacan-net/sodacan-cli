@@ -127,22 +127,23 @@ public abstract class CmdBase {
 	 * @return The selected mode, or null
 	 */
 	protected Mode needMode() {
-		// Setup base and initial modes (it will be ignored if already done, once)
-		Mode.configure(needConfig());
-		// Now see which one we want
-		String modeName;
-		// The -m option specifies mode, but we allow a default mode, too
-		if (commandLine.hasOption("m")) {
-			modeName = commandLine.getOptionValue("m");
-		} else {
-			modeName = Initialize.DEFAULT_MODE;
-		}
-		// OK, now we know which mode we need. Let's see if it exists.
-		Mode mode = Mode.findMode(modeName);
-		if (mode==null) {
-			throw new SodacanException("Specified mode: " + modeName + " not found");
-		}
-		return mode;
+		return Mode.getInstance();
+//		// Setup base and initial modes (it will be ignored if already done, once)
+//		Mode.configure(needConfig());
+//		// Now see which one we want
+//		String modeName;
+//		// The -m option specifies mode, but we allow a default mode, too
+//		if (commandLine.hasOption("m")) {
+//			modeName = commandLine.getOptionValue("m");
+//		} else {
+//			modeName = Initialize.DEFAULT_MODE;
+//		}
+//		// OK, now we know which mode we need. Let's see if it exists.
+//		Mode mode = Mode.findMode(modeName);
+//		if (mode==null) {
+//			throw new SodacanException("Specified mode: " + modeName + " not found");
+//		}
+//		return mode;
 	}
 
 	/**
