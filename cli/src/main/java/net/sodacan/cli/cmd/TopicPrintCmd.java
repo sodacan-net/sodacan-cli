@@ -15,6 +15,9 @@
 package net.sodacan.cli.cmd;
 
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.cli.CommandLine;
 
@@ -27,7 +30,7 @@ import net.sodacan.messagebus.MBTopic;
 import net.sodacan.mode.Mode;
 
 public class TopicPrintCmd extends CmdBase implements Action {
-
+	private static ExecutorService executorService = Executors.newCachedThreadPool();
 	public TopicPrintCmd( CommandContext cc) {
 		super( cc );
 	}
@@ -41,7 +44,27 @@ public class TopicPrintCmd extends CmdBase implements Action {
 		System.out.println("Topic " + topicName);
 		MBTopic mbt = mb.openTopic(topicName, 0);
 		if (commandLine.hasOption('f')) {
-			mbt.follow().forEach((mbr) -> System.out.println("Topic Print with follow: " + mbr));
+			addFollow(topicName, mbt);
+			// Start a thread to display the records as they come in
+			executorService.execute(new Runnable() {
+			    @Override 
+			    public void run() {
+			    	BlockingQueue<MBRecord> queue = mbt.follow();
+			    	while (true) {
+						try {
+							MBRecord record = queue.take();
+							if (record.isEOF()) {
+								break;
+							}
+							System.out.println("Topic Print: " + record);
+						} catch (Throwable e) {
+							System.out.print("Leaving stream reader");
+							break;
+						}
+			    	}
+			    	 
+			    }
+			});
 		} else {
 			Map<String, MBRecord> map = mbt.snapshot();
 			map.forEach((k,v) -> System.out.println(k + "=" + v));
