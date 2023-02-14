@@ -47,11 +47,12 @@ import net.sodacan.cli.cmd.ModeCreateCmd;
 import net.sodacan.cli.cmd.ModeListCmd;
 import net.sodacan.cli.cmd.ModuleListCmd;
 import net.sodacan.cli.cmd.ModuleLoadCmd;
-import net.sodacan.cli.cmd.PublishCmd;
+import net.sodacan.cli.cmd.VariableSetCmd;
 import net.sodacan.cli.cmd.TopicDeleteCmd;
 import net.sodacan.cli.cmd.TopicListCmd;
 import net.sodacan.cli.cmd.TopicPrintCmd;
 import net.sodacan.cli.cmd.TopicStatusCmd;
+import net.sodacan.cli.cmd.VariableListCmd;
 import net.sodacan.cli.cmd.TopicFollowCmd;
 import net.sodacan.config.Config;
 import net.sodacan.mode.Mode;
@@ -84,12 +85,13 @@ public class Main implements CommandContext {
 				.action("mode", "create", new ModeCreateCmd(this),"<baseMode> <newMode> Create a new mode")
 				.action("module", "list", new ModuleListCmd(this),"list of module names")
 				.action("module", "load", new ModuleLoadCmd(this),"<file> Load a module from file")
-				.action("publish", new PublishCmd(this), "publish <module> <variable> <value> ")
 				.action("topic", "list", new TopicListCmd(this), "List known topics")
 				.action("topic", "delete", new TopicDeleteCmd(this), "<topic> Delete a topic")
 				.action("topic", "follow", new TopicFollowCmd(this), "<topic> follow contents of a topic")
 				.action("topic", "print", new TopicPrintCmd(this), "<topic> print contents of a topic")
-				.action("topic", "status", new TopicStatusCmd(this), "<topic> status of a topic")
+				.action("topic", "status", new TopicStatusCmd(this), "status of topic <topic> ")
+				.action("variable", "list", new VariableListCmd(this), "list variables from a module <module> ")
+				.action("variable", "set", new VariableSetCmd(this), "Set variable <module> <variable> <value> ")
 				.action("help",  null, "Show help in interactive mode")
 				.action("exit",  null, "quit")
 				.action("quit",  null, "quit")

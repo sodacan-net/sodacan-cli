@@ -16,25 +16,35 @@ package net.sodacan.cli.cmd;
 
 import org.apache.commons.cli.CommandLine;
 
+import net.sodacan.api.module.ModuleContext;
+import net.sodacan.api.module.VariableContext;
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
+import net.sodacan.mode.Mode;
+import net.sodacan.module.variables.Variables;
 
-public class PublishCmd extends CmdBase implements Action {
+public class VariableListCmd extends CmdBase implements Action {
 
-	public PublishCmd( CommandContext cc) {
+	public VariableListCmd( CommandContext cc) {
 		super( cc );
 	}
 
 	@Override
 	public void execute(CommandLine commandLine, int index) {
 		init( commandLine, index);
+		Mode mode = needMode();
 		String moduleName = this.needArg(0, "Module");
-		String variableName = this.needArg(1, "Variable");
-		String value = this.needArg(2, "Value");
 		// Get the module
-		// Get the current variables from state
-		// And variables not in state add to state
+		ModuleContext mctx = new ModuleContext(mode);
+		mctx.fetchModule(moduleName);
+		// Get the variable context
+		VariableContext vctx = mctx.getVariableContext();
+		vctx.restoreAll();
+		// And the current variable
+		Variables vs = vctx.getVariables();
+		// List them
+		System.out.println(vs);
 	}
 
 }

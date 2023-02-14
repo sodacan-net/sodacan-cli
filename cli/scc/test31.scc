@@ -1,0 +1,6 @@
+MODULE test31
+    SUBSCRIBE aa
+    PUBLISH bb
+    PRIVATE cc
+    PRIVATE dd = 66
+    
