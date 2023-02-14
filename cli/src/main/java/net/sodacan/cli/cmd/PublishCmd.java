@@ -14,32 +14,27 @@
  */
 package net.sodacan.cli.cmd;
 
-import java.util.Map;
-
 import org.apache.commons.cli.CommandLine;
 
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
-import net.sodacan.messagebus.MB;
-import net.sodacan.messagebus.MBRecord;
-import net.sodacan.messagebus.MBTopic;
-import net.sodacan.mode.Mode;
 
-public class TopicPrintCmd extends CmdBase implements Action {
-	public TopicPrintCmd( CommandContext cc) {
+public class PublishCmd extends CmdBase implements Action {
+
+	public PublishCmd( CommandContext cc) {
 		super( cc );
 	}
-	
+
 	@Override
 	public void execute(CommandLine commandLine, int index) {
 		init( commandLine, index);
-		String topicName = needArg(0, "topic name");
-		Mode mode = needMode();
-		MB mb = mode.getMB();
-		System.out.println("Topic " + topicName);
-		MBTopic mbt = mb.openTopic(topicName, 0);
-		Map<String, MBRecord> map = mbt.snapshot();
-		map.forEach((k,v) -> System.out.println(k + "=" + v));
+		String moduleName = this.needArg(0, "Module");
+		String variableName = this.needArg(1, "Variable");
+		String value = this.needArg(2, "Value");
+		// Get the module
+		// Get the current variables from state
+		// And variables not in state add to state
 	}
+
 }

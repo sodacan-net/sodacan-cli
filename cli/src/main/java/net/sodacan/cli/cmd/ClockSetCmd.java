@@ -16,23 +16,27 @@ package net.sodacan.cli.cmd;
 
 import org.apache.commons.cli.CommandLine;
 
-import net.sodacan.SodacanException;
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
+import net.sodacan.mode.Mode;
+import net.sodacan.mode.spi.ClockProvider;
 
-public class TopicWatchCmd extends CmdBase implements Action {
-
-	public TopicWatchCmd( CommandContext cc) {
+public class ClockSetCmd extends CmdBase implements Action {
+	protected static final String[] compName = new String[] {"YYYY","MM","DD","HH","MM","SS"};
+	public ClockSetCmd( CommandContext cc) {
 		super( cc );
 	}
-
 	@Override
 	public void execute(CommandLine commandLine, int index) {
-		if (commandLine.getArgList().size() <= index) throw new SodacanException("missing topic name"); 
-		String topicName = commandLine.getArgs()[index];
-//	******* NEEDS ATTENTION **************	
-//		tc.consume(System.out, true);
+		init( commandLine, index);
+		int[] comp = new int[] {1991,1,1,6,0,0};
+		for (int c = 0; c < argCount();c++) {
+			comp[c] = needIntArg(c,compName[c]);
+		}
+		Mode mode = needMode();
+		ClockProvider cp = mode.getClockProvider();
+		cp.setClock(comp[0], comp[1],comp[2],comp[3],comp[4],comp[5]);
 	}
 
 }

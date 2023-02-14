@@ -47,7 +47,7 @@ public class ModuleLoadCmd extends CmdBase implements Action {
 		Path path = needPath(0);
 		try {
 			String rawSource = needFileContents(path);
-			new ModuleLoader(mode).loadModule( rawSource );
+			new ModuleLoader(mode).loadRawModule( rawSource );
 		} finally {
 		}
 	}

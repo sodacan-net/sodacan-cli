@@ -37,6 +37,9 @@ import net.sodacan.cli.cmd.AgentListCmd;
 import net.sodacan.cli.cmd.AgentStatusCmd;
 import net.sodacan.cli.cmd.BrokerListCmd;
 import net.sodacan.cli.cmd.BrokerStatusCmd;
+import net.sodacan.cli.cmd.ClockAdvanceCmd;
+import net.sodacan.cli.cmd.ClockSetCmd;
+import net.sodacan.cli.cmd.ClockShowCmd;
 import net.sodacan.cli.cmd.FollowListCmd;
 import net.sodacan.cli.cmd.FollowStopCmd;
 import net.sodacan.cli.cmd.InitializeCmd;
@@ -44,11 +47,12 @@ import net.sodacan.cli.cmd.ModeCreateCmd;
 import net.sodacan.cli.cmd.ModeListCmd;
 import net.sodacan.cli.cmd.ModuleListCmd;
 import net.sodacan.cli.cmd.ModuleLoadCmd;
+import net.sodacan.cli.cmd.PublishCmd;
 import net.sodacan.cli.cmd.TopicDeleteCmd;
 import net.sodacan.cli.cmd.TopicListCmd;
 import net.sodacan.cli.cmd.TopicPrintCmd;
 import net.sodacan.cli.cmd.TopicStatusCmd;
-import net.sodacan.cli.cmd.TopicWatchCmd;
+import net.sodacan.cli.cmd.TopicFollowCmd;
 import net.sodacan.config.Config;
 import net.sodacan.mode.Mode;
 
@@ -70,19 +74,25 @@ public class Main implements CommandContext {
 				.action("agent", "status", new AgentStatusCmd(this),"[<pattern>] Show status of matching agents")
 				.action("broker", "list", new BrokerListCmd(this), "List known brokers")
 				.action("broker", "status", new BrokerStatusCmd(this), "Show status of broker(s)")
+				.action("clock", "advance", new ClockAdvanceCmd(this), "Advance Clock by <n> <units>")
+				.action("clock", "set", new ClockSetCmd(this), "Set Time - YYYY [MM [DD [HH [MM [SS]]]]]")
+				.action("clock", "show", new ClockShowCmd(this), "Show Time")
 				.action("initialize", new InitializeCmd(this), "Initialize topics")
 				.action("follow", "list", new FollowListCmd(this), "List current follows")
 				.action("follow", "stop", new FollowStopCmd(this), "Stop the named thread")
 				.action("mode", "list", new ModeListCmd(this), "List known modes")
-				.action("mode", "create", new ModeCreateCmd(this),"<mode> Create a new mode")
+				.action("mode", "create", new ModeCreateCmd(this),"<baseMode> <newMode> Create a new mode")
 				.action("module", "list", new ModuleListCmd(this),"list of module names")
 				.action("module", "load", new ModuleLoadCmd(this),"<file> Load a module from file")
+				.action("publish", new PublishCmd(this), "publish <module> <variable> <value> ")
 				.action("topic", "list", new TopicListCmd(this), "List known topics")
 				.action("topic", "delete", new TopicDeleteCmd(this), "<topic> Delete a topic")
+				.action("topic", "follow", new TopicFollowCmd(this), "<topic> follow contents of a topic")
 				.action("topic", "print", new TopicPrintCmd(this), "<topic> print contents of a topic")
 				.action("topic", "status", new TopicStatusCmd(this), "<topic> status of a topic")
-				.action("topic", "watch", new TopicWatchCmd(this), "<topic> watch contents of a topic")
 				.action("help",  null, "Show help in interactive mode")
+				.action("exit",  null, "quit")
+				.action("quit",  null, "quit")
 				;
 
 		// create Options object
@@ -92,9 +102,8 @@ public class Main implements CommandContext {
 		options.addOption(null, "all", false, "When listing any topic, don't reduce the results");
 		options.addOption("c", "config", true, "Config file, default config/config.yaml");
 		options.addOption("d", "debug", false, "show debug output");
-		options.addOption("f", "follow", false, "For any topic, follow the results, asynchronously");
-		options.addOption("I", "indirect", true, "Run the contents of the named file. Use -i to be interact after that.");
 		options.addOption("h", "help", false, "This help");
+		options.addOption("I", "indirect", true, "Execute the contents of the named file. Add -i to be interactive after that.");
 		options.addOption("i", "interactive", false, "Interactive mode");
 		options.addOption(null, "limit", true, "Limit output to <lines>, detault 1000");
 		options.addOption("m", true, "Specify sticky mode, default mode is default");
@@ -112,13 +121,13 @@ public class Main implements CommandContext {
 				String response = bufferedReader.readLine().strip();
 				String args[] = response.split(" ");
 				if (args.length==0 || args[0].isEmpty()) continue;
-				if ("quit".equals(args[0])) {
+				if ("quit".startsWith(args[0])) {
 					break;
 				}
-				if ("exit".equals(args[0])) {
+				if ("exit".startsWith(args[0])) {
 					break;
 				}
-				if ("help".equals(args[0])) {
+				if ("help".startsWith(args[0])) {
 					showHelp();
 				} else {
 					parse(args, false);

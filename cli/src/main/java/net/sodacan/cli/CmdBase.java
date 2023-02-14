@@ -106,6 +106,9 @@ public abstract class CmdBase {
 	 */
 	public void deleteFollow(String followName) {
 		MBTopic mbt = follows.get(followName);
+		if (mbt==null) {
+			throw new SodacanException("Unknown 'follow' topic " + followName);
+		}
 		mbt.stop();
 		follows.remove(followName);
 	}
@@ -156,8 +159,17 @@ public abstract class CmdBase {
 		return file.toPath();
 	}
 	/**
-	 * 
-	 * @param index
+	 * The number of command line arguments past the command(s)
+	 * @return The number of arguments left on the command line
+	 */
+	protected int argCount() {
+		return remainingArguments.size();
+	}
+	
+	/**
+	 * Get an argument from the command line
+	 * @param index The number N argument after the command(s), zero is the first arg. 
+	 * @param Name of the argument if it's missing
 	 * @return
 	 */
 	protected String needArg(int index, String argName) {
@@ -168,6 +180,16 @@ public abstract class CmdBase {
 			throw new SodacanException(commandName + " missing argment" + argName);
 		}
 		return remainingArguments.get(index);
+	}
+
+	/**
+	 * Get an integer argument from the command line
+	 * @param index The number N argument after the command(s), zero is the first arg. 
+	 * @param Name of the argument if it's missing
+	 * @return
+	 */
+	protected int needIntArg(int index, String argName) {
+		return Integer.parseInt(needArg(index, argName));
 	}
 
 	protected String needFileContents( Path path ) {

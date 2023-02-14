@@ -14,32 +14,44 @@
  */
 package net.sodacan.cli.cmd;
 
-import java.util.Map;
+import java.time.Duration;
 
 import org.apache.commons.cli.CommandLine;
 
+import net.sodacan.SodacanException;
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
-import net.sodacan.messagebus.MB;
-import net.sodacan.messagebus.MBRecord;
-import net.sodacan.messagebus.MBTopic;
 import net.sodacan.mode.Mode;
+import net.sodacan.mode.spi.ClockProvider;
 
-public class TopicPrintCmd extends CmdBase implements Action {
-	public TopicPrintCmd( CommandContext cc) {
+public class ClockAdvanceCmd extends CmdBase implements Action {
+
+	public ClockAdvanceCmd( CommandContext cc) {
 		super( cc );
 	}
 	
 	@Override
 	public void execute(CommandLine commandLine, int index) {
 		init( commandLine, index);
-		String topicName = needArg(0, "topic name");
+		int value = needIntArg(0,"Value");
+		String units = needArg(1,"Units");
 		Mode mode = needMode();
-		MB mb = mode.getMB();
-		System.out.println("Topic " + topicName);
-		MBTopic mbt = mb.openTopic(topicName, 0);
-		Map<String, MBRecord> map = mbt.snapshot();
-		map.forEach((k,v) -> System.out.println(k + "=" + v));
+		ClockProvider cp = mode.getClockProvider();
+		Duration duration = null;
+		if (units.startsWith("hou")) {
+			duration = Duration.ofHours(value);		
+		} else if (units.startsWith("min")) {
+			duration = Duration.ofMinutes(value);		
+		} else if (units.startsWith("sec")) {
+			duration = Duration.ofSeconds(value);		
+		} else if (units.startsWith("day")) {
+			duration = Duration.ofDays(value);		
+		}
+		if (duration==null) {
+			throw new SodacanException("Invalid units specified in clock advance");
+		}
+		cp.advanceClock(duration);
 	}
+
 }

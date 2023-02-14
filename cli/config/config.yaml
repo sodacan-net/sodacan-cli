@@ -19,3 +19,5 @@ modes:
         pluginType: memory
       stateStore: 
         pluginType: memory
+      clock:
+        pluginType: static

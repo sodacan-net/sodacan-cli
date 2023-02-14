@@ -14,32 +14,29 @@
  */
 package net.sodacan.cli.cmd;
 
-import java.util.Map;
+import java.time.Instant;
 
 import org.apache.commons.cli.CommandLine;
 
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
-import net.sodacan.messagebus.MB;
-import net.sodacan.messagebus.MBRecord;
-import net.sodacan.messagebus.MBTopic;
 import net.sodacan.mode.Mode;
+import net.sodacan.mode.spi.ClockProvider;
 
-public class TopicPrintCmd extends CmdBase implements Action {
-	public TopicPrintCmd( CommandContext cc) {
+public class ClockShowCmd extends CmdBase implements Action {
+
+	public ClockShowCmd( CommandContext cc) {
 		super( cc );
 	}
-	
+
 	@Override
 	public void execute(CommandLine commandLine, int index) {
 		init( commandLine, index);
-		String topicName = needArg(0, "topic name");
 		Mode mode = needMode();
-		MB mb = mode.getMB();
-		System.out.println("Topic " + topicName);
-		MBTopic mbt = mb.openTopic(topicName, 0);
-		Map<String, MBRecord> map = mbt.snapshot();
-		map.forEach((k,v) -> System.out.println(k + "=" + v));
+		ClockProvider cp = mode.getClockProvider();
+		Instant instant = Instant.ofEpochSecond(cp.getTimestamp());
+		System.out.println(instant.toString());
 	}
+
 }
