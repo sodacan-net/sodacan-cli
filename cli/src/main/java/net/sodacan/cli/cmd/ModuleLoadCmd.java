@@ -18,7 +18,7 @@ import java.nio.file.Path;
 
 import org.apache.commons.cli.CommandLine;
 
-import net.sodacan.api.module.ModuleLoader;
+import net.sodacan.api.module.ModuleContext;
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
@@ -47,7 +47,7 @@ public class ModuleLoadCmd extends CmdBase implements Action {
 		Path path = needPath(0);
 		try {
 			String rawSource = needFileContents(path);
-			new ModuleLoader(mode).loadRawModule( rawSource );
+			new ModuleContext(mode).loadRawModule( rawSource );
 		} finally {
 		}
 	}
