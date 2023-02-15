@@ -14,12 +14,6 @@
  */
 package net.sodacan.cli;
 
-import java.util.List;
-
-import net.sodacan.api.Followable;
-
 public interface CommandContext {
-	public void addFollowable( Followable followable );
-	public List<Followable> getFollowables();
-	public void stop( String name );
+//	public void stop( String name );
 }

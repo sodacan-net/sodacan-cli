@@ -8,4 +8,6 @@ module load scc/test31.scc
 
 variable set test31 bb x
 variable list test31
-variable set test30 aa xfrom30
+topic publish test30 aa aaaaaaaaaaaaaaaa
+topic publish test30 ab abababa
+topic publish test30 ac acacacacacac

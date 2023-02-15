@@ -18,8 +18,6 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -31,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sodacan.SodacanException;
-import net.sodacan.api.Followable;
 import net.sodacan.api.topic.Initialize;
 import net.sodacan.cli.cmd.AgentListCmd;
 import net.sodacan.cli.cmd.AgentStatusCmd;
@@ -49,13 +46,14 @@ import net.sodacan.cli.cmd.ModuleListCmd;
 import net.sodacan.cli.cmd.ModuleLoadCmd;
 import net.sodacan.cli.cmd.ModuleRunCmd;
 import net.sodacan.cli.cmd.ModuleSubscribersCmd;
-import net.sodacan.cli.cmd.VariableSetCmd;
 import net.sodacan.cli.cmd.TopicDeleteCmd;
+import net.sodacan.cli.cmd.TopicFollowCmd;
 import net.sodacan.cli.cmd.TopicListCmd;
 import net.sodacan.cli.cmd.TopicPrintCmd;
+import net.sodacan.cli.cmd.TopicPublishCmd;
 import net.sodacan.cli.cmd.TopicStatusCmd;
 import net.sodacan.cli.cmd.VariableListCmd;
-import net.sodacan.cli.cmd.TopicFollowCmd;
+import net.sodacan.cli.cmd.VariableSetCmd;
 import net.sodacan.config.Config;
 import net.sodacan.mode.Mode;
 
@@ -64,7 +62,6 @@ public class Main implements CommandContext {
 	private Command command;
 	private Options options;
 	private CommandLineParser parser;
-	private List<Followable> followables = new LinkedList<>();
 
 	/**
 	 * Setup for command dispatching.
@@ -93,6 +90,7 @@ public class Main implements CommandContext {
 				.action("topic", "delete", new TopicDeleteCmd(this), "<topic> Delete a topic")
 				.action("topic", "follow", new TopicFollowCmd(this), "<topic> follow contents of a topic")
 				.action("topic", "print", new TopicPrintCmd(this), "<topic> print contents of a topic")
+				.action("topic", "publish", new TopicPublishCmd(this), "<module> <variable> <value> publish the value, module does not have to exist")
 				.action("topic", "status", new TopicStatusCmd(this), "status of topic <topic> ")
 				.action("variable", "list", new VariableListCmd(this), "list variables from a module <module> ")
 				.action("variable", "set", new VariableSetCmd(this), "Set variable <module> <variable> <value> ")
@@ -269,30 +267,4 @@ public class Main implements CommandContext {
 		}
 	}
 
-	@Override
-	public void addFollowable(Followable followable ) {
-		followables.add(followable);
-	}
-
-	@Override
-	public void stop(String name) {
-		Followable toBeRemoved = null;
-		for (Followable followable : getFollowables()) {
-			if (followable.getName().equals(name)) {
-				followable.stop();
-				toBeRemoved = followable;
-				break;
-			}
-		}
-		if (toBeRemoved==null) {
-			throw new SodacanException("No such follow: " + name);
-		} else {
-			followables.remove(toBeRemoved);
-		}
-	}
-
-	@Override
-	public List<Followable> getFollowables() {
-		return followables;
-	}
 }

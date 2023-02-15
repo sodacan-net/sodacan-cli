@@ -16,25 +16,24 @@ package net.sodacan.cli.cmd;
 
 import org.apache.commons.cli.CommandLine;
 
-import net.sodacan.api.module.ModuleContext;
-import net.sodacan.api.module.VariableContext;
+import net.sodacan.api.module.SimplePublisher;
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
 import net.sodacan.mode.Mode;
-import net.sodacan.module.value.Value;
-
 /**
- * This command emulates a module processing cycle. The moduleContext and VariableContext are established as if
- * to process an incoming event. The variable is then set, as if done by the module itself. And then the save method is called
- * which publishes the (one) changed variable. See 'module publish' for a simple publish to a topic that may not have a module yet.
- *  
+ * <p>Publish an event (variable) to the named module's publish topic. 
+ * The named module does not have to exist, this command publishes a message
+ * as if the module did exist. Therefore, any module that subscribes to this topic will get the event.
+ * Note: The topic must already exist. For that to happen, at least one other module interested in the module named here
+ * must have been loaded. 
+ * </p>
  * @author John Churin
  *
  */
-public class VariableSetCmd extends CmdBase implements Action {
+public class TopicPublishCmd extends CmdBase implements Action {
 
-	public VariableSetCmd( CommandContext cc) {
+	public TopicPublishCmd( CommandContext cc) {
 		super( cc );
 	}
 
@@ -45,18 +44,9 @@ public class VariableSetCmd extends CmdBase implements Action {
 		String moduleName = this.needArg(0, "Module");
 		String variableName = this.needArg(1, "Variable");
 		String valueStr = this.needArg(2, "Value");
-		Value value = new Value(valueStr);
-		// Get the module
-		ModuleContext mctx = new ModuleContext(mode);
-		mctx.fetchModule(moduleName);
-		// Get the variable context
-		VariableContext vctx = mctx.getVariableContext();
-		// Get the variables
-		vctx.restoreAll();
-		// set the new variable value
-		vctx.setValue(variableName, value);
-		// And, finally, publish any changed variables
-		vctx.saveAndPublish();
+
+		SimplePublisher sp = new SimplePublisher(mode);
+		sp.publish(moduleName, variableName, valueStr);
 	}
 
 }
