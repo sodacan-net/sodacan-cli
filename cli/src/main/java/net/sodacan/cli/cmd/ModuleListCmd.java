@@ -40,7 +40,7 @@ public class ModuleListCmd extends CmdBase implements Action {
 		MB mb = mode.getMB();
 		MBTopic mbt = mb.openTopic(Initialize.MODULES, 0);
 		Map<String, MBRecord> map = mbt.snapshot();
-		map.forEach((k,v) -> System.out.println(v));
+		map.forEach((k,v) -> System.out.println(k+ "=" + v));
 	}
 
 }

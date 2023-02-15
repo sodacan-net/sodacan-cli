@@ -56,7 +56,7 @@ public class VariableSetCmd extends CmdBase implements Action {
 		// set the new variable value
 		vctx.setValue(variableName, value);
 		// And, finally, publish any changed variables
-		vctx.save();
+		vctx.saveAndPublish();
 	}
 
 }
