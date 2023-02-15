@@ -1,5 +1,5 @@
 MODULE test31
-    SUBSCRIBE aa
+    SUBSCRIBE test30.aa AS aa
     PUBLISH bb
     PRIVATE cc
     PRIVATE dd = 66

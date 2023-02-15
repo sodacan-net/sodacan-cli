@@ -28,6 +28,11 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sodacan</groupId>
+			<artifactId>runtime</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sodacan</groupId>
 			<artifactId>plugin-kafka</artifactId>
 			<version>0.0.1</version>
 		</dependency>

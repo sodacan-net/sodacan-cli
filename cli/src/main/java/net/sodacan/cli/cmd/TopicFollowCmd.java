@@ -30,7 +30,6 @@ import net.sodacan.messagebus.MBTopic;
 import net.sodacan.mode.Mode;
 
 public class TopicFollowCmd extends CmdBase implements Action {
-	private static ExecutorService executorService = Executors.newCachedThreadPool();
 
 	public TopicFollowCmd( CommandContext cc) {
 		super( cc );

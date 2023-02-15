@@ -22,6 +22,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.cli.CommandLine;
 
@@ -37,6 +39,8 @@ import net.sodacan.mode.Mode;
  *
  */
 public abstract class CmdBase {
+	protected static ExecutorService executorService = Executors.newCachedThreadPool();
+
 	private CommandLine commandLine;
 	private List<String> remainingArguments;
 	// name to use if we get an error
