@@ -44,8 +44,10 @@ import net.sodacan.cli.cmd.ModeCreateCmd;
 import net.sodacan.cli.cmd.ModeListCmd;
 import net.sodacan.cli.cmd.ModuleListCmd;
 import net.sodacan.cli.cmd.ModuleLoadCmd;
-import net.sodacan.cli.cmd.ModuleRunCmd;
+import net.sodacan.cli.cmd.RuntimeRunCmd;
+import net.sodacan.cli.cmd.RuntimeStopCmd;
 import net.sodacan.cli.cmd.ModuleSubscribersCmd;
+import net.sodacan.cli.cmd.RuntimeListCmd;
 import net.sodacan.cli.cmd.TopicDeleteCmd;
 import net.sodacan.cli.cmd.TopicFollowCmd;
 import net.sodacan.cli.cmd.TopicListCmd;
@@ -84,8 +86,10 @@ public class Main implements CommandContext {
 				.action("mode", "create", new ModeCreateCmd(this),"<baseMode> <newMode> Create a new mode")
 				.action("module", "list", new ModuleListCmd(this),"list of module names")
 				.action("module", "load", new ModuleLoadCmd(this),"<file> Load a module from file")
-				.action("module", "run", new ModuleRunCmd(this),"<module> Run a module")
 				.action("module", "subscribers", new ModuleSubscribersCmd(this),"<module> A list of a modules subscribers")
+				.action("runtime", "run", new RuntimeRunCmd(this),"<module> Run a module")
+				.action("runtime", "list", new RuntimeListCmd(this), "List current runtimes")
+				.action("runtime", "stop", new RuntimeStopCmd(this), "<runtime> Stop the named runtime")
 				.action("topic", "list", new TopicListCmd(this), "List known topics")
 				.action("topic", "delete", new TopicDeleteCmd(this), "<topic> Delete a topic")
 				.action("topic", "follow", new TopicFollowCmd(this), "<topic> follow contents of a topic")

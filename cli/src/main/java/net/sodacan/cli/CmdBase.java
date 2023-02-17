@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.commons.cli.CommandLine;
 
@@ -32,6 +33,7 @@ import net.sodacan.api.topic.Initialize;
 import net.sodacan.config.Config;
 import net.sodacan.messagebus.MBTopic;
 import net.sodacan.mode.Mode;
+import net.sodacan.runtime.Runtime;
 
 /**
  * Provides suport methods for many commands.
@@ -48,6 +50,7 @@ public abstract class CmdBase {
 	protected CommandContext cc;
 //	protected static Map<String, Stream<MBRecord>> follows = new ConcurrentHashMap<>();
 	protected static Map<String, MBTopic> follows = new ConcurrentHashMap<>();
+	protected static Map<String, Future<?>> runtimes = new ConcurrentHashMap<>();
 	
 	protected CmdBase( CommandContext cc ) {
 		this.cc = cc;
@@ -117,6 +120,36 @@ public abstract class CmdBase {
 		follows.remove(followName);
 	}
 
+	public Future<?> addRuntime( Mode mode, String moduleName) {
+		String runtimeName = mode.getModeName() + "-" + moduleName;
+		if (runtimes.containsKey(runtimeName)) {
+			throw new SodacanException("Mode/Module (" + runtimeName + ") is already running.");
+		}
+		Runtime runtime = new Runtime(mode, moduleName);
+		// Start a thread to start the runtime
+		Future<?> future = executorService.submit(runtime);
+		// Remember the thread for cancellation later.
+		runtimes.put(runtimeName, future);
+		return future;
+	}
+	
+	public List<String> listRuntimes() {
+		List<String> list = new LinkedList<>();
+		for (String key : runtimes.keySet()) {
+			list.add(key);
+		}
+		return list;
+	}
+	
+	public void deleteRuntime(String runtimeName) {
+		Future<?> future = runtimes.get(runtimeName);
+		if (future==null) {
+			throw new SodacanException("Unknown runtime: " + runtimeName);
+		}
+		future.cancel(true);
+		runtimes.remove(runtimeName);
+	}
+
 	/**
 	 * <p>Many commands need a mode to be specified or defaulted, so, we set it up here.</p>
 	 * <p> There are three "kinds" of mode related to this.
@@ -135,22 +168,6 @@ public abstract class CmdBase {
 	 */
 	protected Mode needMode() {
 		return Mode.getInstance();
-//		// Setup base and initial modes (it will be ignored if already done, once)
-//		Mode.configure(needConfig());
-//		// Now see which one we want
-//		String modeName;
-//		// The -m option specifies mode, but we allow a default mode, too
-//		if (commandLine.hasOption("m")) {
-//			modeName = commandLine.getOptionValue("m");
-//		} else {
-//			modeName = Initialize.DEFAULT_MODE;
-//		}
-//		// OK, now we know which mode we need. Let's see if it exists.
-//		Mode mode = Mode.findMode(modeName);
-//		if (mode==null) {
-//			throw new SodacanException("Specified mode: " + modeName + " not found");
-//		}
-//		return mode;
 	}
 
 	/**
