@@ -20,19 +20,20 @@ import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
 import net.sodacan.mode.Mode;
+import net.sodacan.runtime.Runtime;
 /**
  * <p>Run a module in a Sodacan runtime. The runtime is the same as if run within an agent but
  * it differs in that there is no coordination with other runners of this module. In other words,
  * the same module could be running more than one place at the same time so this is a no-no in a production
  * environment. But it is useful when testing a new module. </p>
- * <p>A module run in this way continues until the CLI exits or until the <code>module stop</code> command is used to stop it.
+ * <p>A module run in this way continues until the CLI exits or until the <code>follow stop</code> command is used to stop it.
  * While the module is running, you can publish messages and change the clock which the module will respond to.</p>
  * @author John Churin
  *
  */
-public class RuntimeRunCmd extends CmdBase implements Action {
+public class ModuleRunCmd extends CmdBase implements Action {
 
-	public RuntimeRunCmd( CommandContext cc) {
+	public ModuleRunCmd( CommandContext cc) {
 		super( cc );
 	}
 	
@@ -41,9 +42,7 @@ public class RuntimeRunCmd extends CmdBase implements Action {
 		init( commandLine, index);
 		String moduleName = needArg(0, "Module name");
 		Mode mode = needMode();
-		// Our superclass handles the details of the runtime lifecycle including thread creation.
-		addRuntime(mode, moduleName);
-			
+		addFuture(mode.getModeName() + "-" + moduleName, executorService.submit(new Runtime(mode, moduleName)));			
 	}
 
 }

@@ -28,8 +28,8 @@ public class FollowListCmd extends CmdBase implements Action {
 
 	@Override
 	public void execute(CommandLine commandLine, int index) {
-		for (String followName : getFollows()) {
-			System.out.println("Following: " + followName);
+		for (String futureName : getFutures()) {
+			System.out.println("Following: " + futureName);
 		}
 	}
 

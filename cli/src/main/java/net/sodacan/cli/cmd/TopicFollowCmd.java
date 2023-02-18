@@ -14,18 +14,12 @@
  */
 package net.sodacan.cli.cmd;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.apache.commons.cli.CommandLine;
 
-import net.sodacan.SodacanException;
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
 import net.sodacan.messagebus.MB;
-import net.sodacan.messagebus.MBRecord;
 import net.sodacan.messagebus.MBTopic;
 import net.sodacan.mode.Mode;
 
@@ -43,27 +37,7 @@ public class TopicFollowCmd extends CmdBase implements Action {
 		MB mb = mode.getMB();
 		System.out.println("Topic " + topicName);
 		MBTopic mbt = mb.openTopic(topicName, 0);
-		addFollow(topicName, mbt);
-		// Start a thread to display the records as they come in
-		executorService.execute(new Runnable() {
-		    @Override 
-		    public void run() {
-		    	BlockingQueue<MBRecord> queue = mbt.follow();
-		    	while (true) {
-					try {
-						MBRecord record = queue.take();
-						if (record.isEOF()) {
-							break;
-						}
-						System.out.println("Topic Print: " + record);
-					} catch (Throwable e) {
-						System.out.print("Leaving stream reader");
-						break;
-					}
-		    	}
-		    	 
-		    }
-		});
+    	addFuture(topicName, mbt.follow((rec) -> System.out.println("Topic Print: " + rec)));
 	}
 
 }

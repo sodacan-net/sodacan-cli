@@ -31,9 +31,7 @@ import org.apache.commons.cli.CommandLine;
 import net.sodacan.SodacanException;
 import net.sodacan.api.topic.Initialize;
 import net.sodacan.config.Config;
-import net.sodacan.messagebus.MBTopic;
 import net.sodacan.mode.Mode;
-import net.sodacan.runtime.Runtime;
 
 /**
  * Provides suport methods for many commands.
@@ -48,9 +46,7 @@ public abstract class CmdBase {
 	// name to use if we get an error
 	private String commandName;
 	protected CommandContext cc;
-//	protected static Map<String, Stream<MBRecord>> follows = new ConcurrentHashMap<>();
-	protected static Map<String, MBTopic> follows = new ConcurrentHashMap<>();
-	protected static Map<String, Future<?>> runtimes = new ConcurrentHashMap<>();
+	protected static Map<String, Future<?>> futures = new ConcurrentHashMap<>();
 	
 	protected CmdBase( CommandContext cc ) {
 		this.cc = cc;
@@ -91,17 +87,17 @@ public abstract class CmdBase {
 	 * @param followName
 	 * @param stream
 	 */
-	public void addFollow(String followName, MBTopic mbt ) {
-		follows.put(followName, mbt);
+	public void addFuture(String followName, Future<?> future ) {
+		futures.put(followName, future);
 	}
 
 	/**
 	 * Return a list of follows
 	 * @return an  unordered list of follow names
 	 */
-	public List<String> getFollows() {
+	public List<String> getFutures() {
 		List<String> list = new LinkedList<>();
-		for (String key : follows.keySet()) {
+		for (String key : futures.keySet()) {
 			list.add(key);
 		}
 		return list;
@@ -111,43 +107,23 @@ public abstract class CmdBase {
 	 * Close and remove a follows from the list
 	 * @param followName
 	 */
-	public void deleteFollow(String followName) {
-		MBTopic mbt = follows.get(followName);
-		if (mbt==null) {
-			throw new SodacanException("Unknown 'follow' topic " + followName);
-		}
-		mbt.stop();
-		follows.remove(followName);
-	}
-
-	public Future<?> addRuntime( Mode mode, String moduleName) {
-		String runtimeName = mode.getModeName() + "-" + moduleName;
-		if (runtimes.containsKey(runtimeName)) {
-			throw new SodacanException("Mode/Module (" + runtimeName + ") is already running.");
-		}
-		Runtime runtime = new Runtime(mode, moduleName);
-		// Start a thread to start the runtime
-		Future<?> future = executorService.submit(runtime);
-		// Remember the thread for cancellation later.
-		runtimes.put(runtimeName, future);
-		return future;
-	}
-	
-	public List<String> listRuntimes() {
-		List<String> list = new LinkedList<>();
-		for (String key : runtimes.keySet()) {
-			list.add(key);
-		}
-		return list;
-	}
-	
-	public void deleteRuntime(String runtimeName) {
-		Future<?> future = runtimes.get(runtimeName);
+	public void deleteFuture(String futureName) {
+		Future<?> future = futures.get(futureName);
 		if (future==null) {
-			throw new SodacanException("Unknown runtime: " + runtimeName);
+			throw new SodacanException("Unknown 'future' " + futureName);
 		}
 		future.cancel(true);
-		runtimes.remove(runtimeName);
+		futures.remove(futureName);
+	}
+
+	/**
+	 * Cancel all currently known futures, typically called at program exit
+	 */
+	public static void deleteAllFutures() {
+		for (Future<?> future : futures.values()) {
+			future.cancel(true);
+		}
+		futures = new ConcurrentHashMap<>();
 	}
 
 	/**

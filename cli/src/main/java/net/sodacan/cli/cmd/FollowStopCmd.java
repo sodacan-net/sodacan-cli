@@ -29,9 +29,9 @@ public class FollowStopCmd extends CmdBase implements Action {
 	@Override
 	public void execute(CommandLine commandLine, int index) {
 		init( commandLine, index);
-		String followName = this.needArg(0, "Follow Name");
-		this.deleteFollow(followName);
-		System.out.println("Stopped following: " + followName);
+		String futureName = this.needArg(0, "Follow Name");
+		this.deleteFuture(futureName);
+		System.out.println("Stopped following: " + futureName);
 	}
 
 }

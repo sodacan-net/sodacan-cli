@@ -1,7 +1,7 @@
 # Load up some data useful for testing
 initialize
 mode list
-topic list
+topic list --sort
 clock set 2023 02 12 21 19
 clock show
 module load scc/test31.scc
