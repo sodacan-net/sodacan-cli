@@ -13,7 +13,7 @@ modes:
         pluginType: kafka 
         brokers: soda6:9092
         linger.ms: 0
-        poll.timeout.ms: 500
+        poll.timeout.ms: 100
       clock:
         pluginType: real
     - name: test
