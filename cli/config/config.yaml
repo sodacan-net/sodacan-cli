@@ -16,10 +16,13 @@ modes:
         poll.timeout.ms: 100
       clock:
         pluginType: real
+      tickSource:
+        copyFrom: messageBus
+        increment.ms: 60000
     - name: test
       messageBus: 
         pluginType: memory
-      stateStore: 
+      tickSource: 
         pluginType: memory
       clock:
         pluginType: static

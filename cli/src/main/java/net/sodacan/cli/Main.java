@@ -46,6 +46,8 @@ import net.sodacan.cli.cmd.ModuleListCmd;
 import net.sodacan.cli.cmd.ModuleLoadCmd;
 import net.sodacan.cli.cmd.ModuleRunCmd;
 import net.sodacan.cli.cmd.ModuleSubscribersCmd;
+import net.sodacan.cli.cmd.TickSeedCmd;
+import net.sodacan.cli.cmd.TickStartCmd;
 import net.sodacan.cli.cmd.TopicDeleteCmd;
 import net.sodacan.cli.cmd.TopicFollowCmd;
 import net.sodacan.cli.cmd.TopicListCmd;
@@ -86,6 +88,8 @@ public class Main implements CommandContext {
 				.action("module", "load", new ModuleLoadCmd(this),"<file> Load a module from file")
 				.action("module", "run", new ModuleRunCmd(this),"<module> Run a module")
 				.action("module", "subscribers", new ModuleSubscribersCmd(this),"<module> A list of a modules subscribers")
+				.action("tick", "start", new TickStartCmd(this), "Start the tick source")
+				.action("tick", "seed", new TickSeedCmd(this), "Seed the tick source")
 				.action("topic", "list", new TopicListCmd(this), "List known topics")
 				.action("topic", "delete", new TopicDeleteCmd(this), "<topic> Delete a topic")
 				.action("topic", "follow", new TopicFollowCmd(this), "<topic> follow contents of a topic")

@@ -16,37 +16,24 @@ package net.sodacan.cli.cmd;
 
 import org.apache.commons.cli.CommandLine;
 
-import net.sodacan.api.module.SimplePublisher;
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
 import net.sodacan.mode.Mode;
-/**
- * <p>Publish an event (variable) to the named module's publish topic. 
- * The named module does not have to exist, this command publishes a message
- * as if the module did exist. Therefore, any module that subscribes to this topic will get the event.
- * Note: The topic must already exist. For that to happen, at least one other modules interested in the module named here
- * must have been loaded. 
- * </p>
- * @author John Churin
- *
- */
-public class TopicPublishCmd extends CmdBase implements Action {
 
-	public TopicPublishCmd( CommandContext cc) {
+public class TickStartCmd extends CmdBase implements Action {
+
+	public TickStartCmd( CommandContext cc) {
 		super( cc );
 	}
-
+	
 	@Override
 	public void execute(CommandLine commandLine, int index) {
 		init( commandLine, index);
 		Mode mode = needMode();
-		String moduleName = this.needArg(0, "Module");
-		String variableName = this.needArg(1, "Variable");
-		String valueStr = this.needArg(2, "Value");
+		String tickName = mode.getBaseModeName() + "-tick";
+		addFuture(tickName, mode.getTickSourceProvider().start());
 
-		SimplePublisher sp = new SimplePublisher(mode);
-		sp.publish(moduleName, variableName, valueStr);
 	}
 
 }
